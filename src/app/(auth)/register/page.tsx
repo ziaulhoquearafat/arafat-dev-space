@@ -83,9 +83,9 @@ export default function RegisterPage() {
       }
 
       setSuccessMsg("Account created successfully! Redirecting...");
-      toast.success("Account created successfully! Redirecting to login...");
+      toast.success("Welcome! Account created successfully.");
       setTimeout(() => {
-        router.push("/login");
+        router.push("/");
       }, 1500);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to register. Please try again.";

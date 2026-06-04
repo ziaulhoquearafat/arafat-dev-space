@@ -18,7 +18,12 @@ export async function middleware(request: NextRequest) {
       throw new Error("JWT_SECRET is not defined inside environment variables.");
     }
     const secretKey = new TextEncoder().encode(secret);
-    await jwtVerify(token, secretKey);
+    const { payload } = await jwtVerify(token, secretKey);
+    const role = payload.role as string | undefined;
+
+    if (request.nextUrl.pathname.startsWith("/dashboard") && role !== "admin") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
 
     return NextResponse.next();
   } catch (error) {

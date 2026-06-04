@@ -17,7 +17,7 @@ interface NavbarProps {
 export function Navbar({ isAuthenticated }: NavbarProps) {
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState<{ name: string; email: string; profileImage?: string } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ name: string; email: string; role?: string; profileImage?: string } | null>(null);
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const navbarRef = useRef<HTMLDivElement>(null);
@@ -87,9 +87,11 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
     { label: "Home", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: "Blogs", href: "/blogs" },
-    ...(isAuthenticated ? [{ label: "Dashboard", href: "/dashboard" }] : []),
+    ...(isAuthenticated && userProfile?.role === "admin" ? [{ label: "Dashboard", href: "/dashboard" }] : []),
     { label: "Contact", href: "#contact" },
   ];
+
+  const profileHref = userProfile?.role === "admin" ? "/dashboard/profile" : "/user";
 
   return (
     <div
@@ -141,7 +143,7 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
               <Link
-                href="/dashboard/profile"
+                href={profileHref}
                 className="flex size-9 items-center justify-center rounded-full bg-linear-to-br from-primary to-accent p-0.5 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
                 aria-label="View Profile"
               >
@@ -238,7 +240,7 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
                 <div className="flex flex-col gap-4">
                   <div className="flex items-center justify-between">
                     <Link
-                      href="/dashboard/profile"
+                      href={profileHref}
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="flex items-center gap-3"
                     >

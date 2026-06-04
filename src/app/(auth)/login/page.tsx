@@ -80,10 +80,15 @@ export default function LoginPage() {
         throw new Error(result.error || "Invalid email or password.");
       }
 
+      const userRole = result.user?.role;
       setSuccessMsg("Logged in successfully! Redirecting...");
       toast.success("Welcome back! Logged in successfully.");
       setTimeout(() => {
-        router.push("/dashboard");
+        if (userRole === "admin") {
+          router.push("/dashboard");
+        } else {
+          router.push("/");
+        }
         router.refresh();
       }, 1000);
     } catch (err) {
