@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Menu, X, LogOut, User } from "lucide-react";
@@ -16,9 +17,31 @@ interface NavbarProps {
 export function Navbar({ isAuthenticated }: NavbarProps) {
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState<{ name: string; email: string; profileImage?: string } | null>(null);
   const { theme, setTheme } = useTheme();
   const pathname = usePathname();
   const navbarRef = useRef<HTMLDivElement>(null);
+
+  // Fetch user profile on mount / auth change
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchProfile = async () => {
+        try {
+          const res = await fetch("/api/users/profile");
+          if (res.ok) {
+            const data = await res.json();
+            setUserProfile(data);
+          }
+        } catch (error) {
+          console.error("Failed to fetch profile in navbar:", error);
+        }
+      };
+      fetchProfile();
+    } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUserProfile(null);
+    }
+  }, [isAuthenticated]);
 
   // Avoid hydration mismatch by waiting for mount
   useEffect(() => {
@@ -117,20 +140,35 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
           {/* Conditional Auth UI */}
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              {/* Profile Avatar */}
-              <div className="flex size-9 items-center justify-center rounded-full bg-linear-to-br from-primary to-accent p-0.5 shadow-sm">
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-card text-card-foreground">
-                  <User className="size-4 text-muted-foreground" />
+              <Link
+                href="/dashboard/profile"
+                className="flex size-9 items-center justify-center rounded-full bg-linear-to-br from-primary to-accent p-0.5 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
+                aria-label="View Profile"
+              >
+                <div className="relative h-full w-full rounded-full bg-card overflow-hidden">
+                  {userProfile?.profileImage ? (
+                    <Image
+                      src={userProfile.profileImage}
+                      alt={userProfile.name || "User Profile"}
+                      fill
+                      sizes="36px"
+                      className="rounded-full object-cover"
+                      priority
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-card-foreground">
+                      <User className="size-4 text-muted-foreground" />
+                    </div>
+                  )}
                 </div>
-              </div>
-              
-              {/* Logout bare button */}
+              </Link>
+
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-destructive cursor-pointer transition-colors"
+                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-4 text-xs font-semibold text-muted-foreground hover:bg-destructive/10 hover:text-destructive cursor-pointer transition-colors shadow-xs"
               >
                 <LogOut className="size-4" />
-                Logout
+                <span>Logout</span>
               </button>
             </div>
           ) : (
@@ -198,13 +236,34 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
             <div className="border-t border-border/40 my-4 pt-4 px-3">
               {isAuthenticated ? (
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex size-9 items-center justify-center rounded-full bg-linear-to-br from-primary to-accent p-0.5">
-                      <div className="flex h-full w-full items-center justify-center rounded-full bg-card text-card-foreground">
-                        <User className="size-4 text-muted-foreground" />
+                  <div className="flex items-center justify-between">
+                    <Link
+                      href="/dashboard/profile"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center gap-3"
+                    >
+                      <div className="flex size-9 items-center justify-center rounded-full bg-linear-to-br from-primary to-accent p-0.5">
+                        <div className="relative h-full w-full rounded-full bg-card overflow-hidden">
+                          {userProfile?.profileImage ? (
+                            <Image
+                              src={userProfile.profileImage}
+                              alt={userProfile.name || "Avatar"}
+                              fill
+                              sizes="36px"
+                              className="rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-card-foreground">
+                              <User className="size-4 text-muted-foreground" />
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <span className="text-sm font-medium text-foreground">My Profile</span>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-foreground leading-none">{userProfile?.name || "My Profile"}</span>
+                        <span className="text-xs text-muted-foreground mt-0.5 leading-none">{userProfile?.email}</span>
+                      </div>
+                    </Link>
                   </div>
                   <button
                     onClick={() => {

@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   role: "admin" | "user";
+  profileImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }
