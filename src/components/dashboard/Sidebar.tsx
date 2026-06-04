@@ -13,6 +13,7 @@ import {
   Moon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
+import { toast } from "react-hot-toast";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -57,11 +58,15 @@ export function Sidebar() {
     try {
       const res = await fetch("/api/auth/logout", { method: "POST" });
       if (res.ok) {
+        toast.success("Logged out successfully.");
         router.push("/login");
         router.refresh();
+      } else {
+        toast.error("Failed to log out. Please try again.");
       }
     } catch (error) {
       console.error("Logout failed:", error);
+      toast.error("Failed to log out. Please try again.");
     }
   };
 

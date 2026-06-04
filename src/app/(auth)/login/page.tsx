@@ -9,6 +9,7 @@ import * as z from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { toast } from "react-hot-toast";
 
 // Define login validation schema using Zod
 const loginSchema = z.object({
@@ -80,6 +81,7 @@ export default function LoginPage() {
       }
 
       setSuccessMsg("Logged in successfully! Redirecting...");
+      toast.success("Welcome back! Logged in successfully.");
       setTimeout(() => {
         router.push("/dashboard");
         router.refresh();
@@ -87,6 +89,7 @@ export default function LoginPage() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to log in. Please try again.";
       setErrorMsg(msg);
+      toast.error(msg);
     }
   };
 

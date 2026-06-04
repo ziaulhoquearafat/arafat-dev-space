@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Plus, Edit, Trash2, Calendar, FileText, Loader2 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import Swal from "sweetalert2";
+import { toast } from "react-hot-toast";
 
 interface Blog {
   _id: string;
@@ -58,20 +60,40 @@ export default function BlogsDashboardPage() {
   );
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this blog post?")) return;
-
-    try {
-      const res = await fetch(`/api/blogs/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setBlogs(blogs.filter((blog) => blog._id !== id));
-      } else {
-        alert("Failed to delete blog post.");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      customClass: {
+        confirmButton: "bg-destructive text-white border-0 font-semibold px-4 py-2 rounded-lg hover:opacity-90 active:scale-95 transition-all duration-200 shadow-md cursor-pointer ml-3",
+        cancelButton: "bg-muted text-muted-foreground border border-border font-semibold px-4 py-2 rounded-lg hover:bg-muted/80 active:scale-95 transition-all duration-200 cursor-pointer",
+        popup: "bg-card text-foreground border border-border/80 rounded-2xl shadow-xl font-sans",
+        title: "text-foreground font-bold",
+        htmlContainer: "text-muted-foreground text-sm",
+      },
+      buttonsStyling: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await fetch(`/api/blogs/${id}`, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            setBlogs(blogs.filter((blog) => blog._id !== id));
+            toast.success("Deleted successfully!");
+          } else {
+            const errorData = await res.json().catch(() => ({}));
+            toast.error(errorData.error || "Failed to delete blog post.");
+          }
+        } catch (error) {
+          console.error("Error deleting blog:", error);
+          toast.error("An unexpected error occurred. Please try again.");
+        }
       }
-    } catch (error) {
-      console.error("Error deleting blog:", error);
-    }
+    });
   };
 
   return (

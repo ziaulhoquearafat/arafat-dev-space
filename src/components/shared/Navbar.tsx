@@ -7,6 +7,7 @@ import { useTheme } from "next-themes";
 import { Sun, Moon, Menu, X, LogOut, User } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { toast } from "react-hot-toast";
 
 interface NavbarProps {
   isAuthenticated: boolean;
@@ -46,10 +47,16 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
     try {
       const res = await fetch("/api/auth/logout", { method: "POST" });
       if (res.ok) {
-        window.location.reload();
+        toast.success("Logged out successfully.");
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      } else {
+        toast.error("Failed to log out. Please try again.");
       }
     } catch (error) {
       console.error("Failed to log out:", error);
+      toast.error("Failed to log out. Please try again.");
     }
   };
 

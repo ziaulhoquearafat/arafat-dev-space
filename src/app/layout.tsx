@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { ToastProvider } from "@/components/shared/ToastProvider";
 
 const oxanium = Oxanium({subsets:['latin'],variable:'--font-sans'});
 
@@ -35,6 +36,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ToastProvider />
           {children}
         </ThemeProvider>
       </body>

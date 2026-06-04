@@ -9,6 +9,7 @@ import * as z from "zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { toast } from "react-hot-toast";
 
 // Define registration validation schema using Zod
 const registerSchema = z.object({
@@ -82,12 +83,14 @@ export default function RegisterPage() {
       }
 
       setSuccessMsg("Account created successfully! Redirecting...");
+      toast.success("Account created successfully! Redirecting to login...");
       setTimeout(() => {
         router.push("/login");
       }, 1500);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to register. Please try again.";
       setErrorMsg(msg);
+      toast.error(msg);
     }
   };
 

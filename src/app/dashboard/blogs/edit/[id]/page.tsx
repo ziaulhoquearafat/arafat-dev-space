@@ -10,6 +10,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { TiptapEditor } from "@/components/editor/TiptapEditor";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { toast } from "react-hot-toast";
 
 // Define form validation schema using Zod for edit (thumbnail is optional)
 const blogFormSchema = z.object({
@@ -76,12 +77,12 @@ export default function EditBlogPage() {
           });
           setExistingThumbnailUrl(blog.thumbnail || "");
         } else {
-          alert("Failed to load blog data.");
+          toast.error("Failed to load blog data.");
           router.push("/dashboard/blogs");
         }
       } catch (error) {
         console.error("Error fetching blog data:", error);
-        alert("An error occurred while fetching the blog data.");
+        toast.error("An error occurred while fetching the blog data.");
         router.push("/dashboard/blogs");
       } finally {
         setLoadingData(false);
@@ -148,16 +149,16 @@ export default function EditBlogPage() {
       });
 
       if (res.ok) {
-        alert("Blog post updated successfully!");
+        toast.success("Blog post updated successfully!");
         router.push("/dashboard/blogs");
         router.refresh();
       } else {
         const errorData = await res.json().catch(() => ({}));
-        alert(errorData.error || "Failed to update blog post.");
+        toast.error(errorData.error || "Failed to update blog post.");
       }
     } catch (error) {
       console.error("Error updating blog:", error);
-      alert("An unexpected error occurred.");
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 

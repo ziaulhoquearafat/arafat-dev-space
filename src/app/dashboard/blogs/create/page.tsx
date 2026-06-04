@@ -10,6 +10,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { TiptapEditor } from "@/components/editor/TiptapEditor";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { toast } from "react-hot-toast";
 
 // Define form validation schema using Zod
 const blogFormSchema = z.object({
@@ -112,16 +113,16 @@ export default function CreateBlogPage() {
       });
 
       if (res.ok) {
-        alert("Blog post created successfully!");
+        toast.success("Blog post created successfully!");
         router.push("/dashboard/blogs");
         router.refresh();
       } else {
         const errorData = await res.json().catch(() => ({}));
-        alert(errorData.error || "Failed to create blog post.");
+        toast.error(errorData.error || "Failed to create blog post.");
       }
     } catch (error) {
       console.error("Error creating blog:", error);
-      alert("An unexpected error occurred.");
+      toast.error("An unexpected error occurred. Please try again.");
     }
   };
 
