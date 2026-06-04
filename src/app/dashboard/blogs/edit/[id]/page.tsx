@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,7 +11,7 @@ import { TiptapEditor } from "@/components/editor/TiptapEditor";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
-// Define form validation schema using Zod
+// Define form validation schema using Zod for edit (thumbnail is optional)
 const blogFormSchema = z.object({
   title: z.string().min(1, "Title is required."),
   slug: z
@@ -23,26 +23,27 @@ const blogFormSchema = z.object({
     ),
   summary: z.string().min(1, "Summary is required."),
   tags: z.string().optional(),
-  thumbnail: z
-    .any()
-    .refine(
-      (files) => files && files.length > 0,
-      "Thumbnail image is required."
-    ),
+  thumbnail: z.any().optional(),
   content: z.string().min(1, "Content is required."),
 });
 
 type BlogFormValues = z.infer<typeof blogFormSchema>;
 
-export default function CreateBlogPage() {
+export default function EditBlogPage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
   const containerRef = useRef<HTMLDivElement>(null);
+  const [loadingData, setLoadingData] = useState(true);
+  const [existingThumbnailUrl, setExistingThumbnailUrl] = useState("");
 
   const {
     register,
     handleSubmit,
     control,
     setValue,
+    reset,
     watch,
     formState: { errors, isSubmitting, dirtyFields },
   } = useForm<BlogFormValues>({
@@ -59,9 +60,42 @@ export default function CreateBlogPage() {
   const title = watch("title");
   const isSlugDirty = dirtyFields.slug;
 
+  // Fetch initial blog data
+  useEffect(() => {
+    const fetchBlog = async () => {
+      try {
+        const res = await fetch(`/api/blogs/${id}`);
+        if (res.ok) {
+          const blog = await res.json();
+          reset({
+            title: blog.title,
+            slug: blog.slug,
+            summary: blog.summary,
+            tags: Array.isArray(blog.tags) ? blog.tags.join(", ") : blog.tags || "",
+            content: blog.content,
+          });
+          setExistingThumbnailUrl(blog.thumbnail || "");
+        } else {
+          alert("Failed to load blog data.");
+          router.push("/dashboard/blogs");
+        }
+      } catch (error) {
+        console.error("Error fetching blog data:", error);
+        alert("An error occurred while fetching the blog data.");
+        router.push("/dashboard/blogs");
+      } finally {
+        setLoadingData(false);
+      }
+    };
+
+    if (id) {
+      fetchBlog();
+    }
+  }, [id, reset, router]);
+
   // Auto-generate slug from title if the slug input hasn't been manually dirtied
   useEffect(() => {
-    if (title && !isSlugDirty) {
+    if (title && !isSlugDirty && loadingData === false) {
       const generatedSlug = title
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, "") // remove special characters
@@ -70,24 +104,26 @@ export default function CreateBlogPage() {
         .replace(/-+/g, "-"); // remove double hyphens
       setValue("slug", generatedSlug, { shouldValidate: true });
     }
-  }, [title, isSlugDirty, setValue]);
+  }, [title, isSlugDirty, setValue, loadingData]);
 
   // Entrance GSAP animation
   useGSAP(
     () => {
-      gsap.fromTo(
-        ".animate-form-item",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-        }
-      );
+      if (!loadingData) {
+        gsap.fromTo(
+          ".animate-form-item",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power3.out",
+          }
+        );
+      }
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [loadingData] }
   );
 
   const onSubmit = async (data: BlogFormValues) => {
@@ -101,29 +137,40 @@ export default function CreateBlogPage() {
         formData.append("tags", data.tags);
       }
 
-      // Extract File object from the FileList
+      // Check if a new thumbnail image was selected
       if (data.thumbnail && data.thumbnail.length > 0) {
         formData.append("thumbnail", data.thumbnail[0]);
       }
 
-      const res = await fetch("/api/blogs", {
-        method: "POST",
+      const res = await fetch(`/api/blogs/${id}`, {
+        method: "PUT",
         body: formData,
       });
 
       if (res.ok) {
-        alert("Blog post created successfully!");
+        alert("Blog post updated successfully!");
         router.push("/dashboard/blogs");
         router.refresh();
       } else {
         const errorData = await res.json().catch(() => ({}));
-        alert(errorData.error || "Failed to create blog post.");
+        alert(errorData.error || "Failed to update blog post.");
       }
     } catch (error) {
-      console.error("Error creating blog:", error);
+      console.error("Error updating blog:", error);
       alert("An unexpected error occurred.");
     }
   };
+
+  if (loadingData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3">
+        <Loader2 className="size-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground font-medium animate-pulse">
+          Loading blog data...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="space-y-6 max-w-4xl">
@@ -141,10 +188,10 @@ export default function CreateBlogPage() {
       {/* Page Header */}
       <div className="animate-form-item space-y-1">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Create New Blog
+          Edit Blog
         </h1>
         <p className="text-sm text-muted-foreground">
-          Draft and publish a new post to your portfolio.
+          Modify and update your published article.
         </p>
       </div>
 
@@ -254,7 +301,7 @@ export default function CreateBlogPage() {
                 htmlFor="thumbnail"
                 className="text-sm font-semibold text-muted-foreground"
               >
-                Thumbnail Image
+                Thumbnail Image (Leave empty to keep existing)
               </label>
               <input
                 id="thumbnail"
@@ -268,6 +315,17 @@ export default function CreateBlogPage() {
                 <p className="text-xs font-medium text-destructive">
                   {(errors.thumbnail.message as string) || "Invalid file."}
                 </p>
+              )}
+              {existingThumbnailUrl && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">Current Thumbnail:</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={existingThumbnailUrl}
+                    alt="Current blog thumbnail"
+                    className="size-10 object-cover rounded border border-border"
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -311,10 +369,10 @@ export default function CreateBlogPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Saving...
+                  Updating...
                 </>
               ) : (
-                "Save Post"
+                "Update Post"
               )}
             </button>
           </div>
