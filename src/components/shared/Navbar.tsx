@@ -88,7 +88,7 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
     { label: "Projects", href: "/projects" },
     { label: "Blogs", href: "/blogs" },
     ...(isAuthenticated && userProfile?.role === "admin" ? [{ label: "Dashboard", href: "/dashboard" }] : []),
-    { label: "Contact", href: "#contact" },
+    { label: "Contact", href: "/contact" },
   ];
 
   const profileHref = userProfile?.role === "admin" ? "/dashboard/profile" : "/user";

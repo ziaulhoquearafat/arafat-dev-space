@@ -23,7 +23,11 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
-export function ContactSection() {
+interface ContactSectionProps {
+  showBorder?: boolean;
+}
+
+export function ContactSection({ showBorder = true }: ContactSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -89,7 +93,9 @@ export function ContactSection() {
     <section
       ref={containerRef}
       id="contact"
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-background relative overflow-hidden border-t border-border/20"
+      className={`py-20 px-4 sm:px-6 lg:px-8 bg-background relative overflow-hidden ${
+        showBorder ? "border-t border-border/20" : ""
+      }`}
     >
       {/* Background Decorative Glow Blobs */}
       <div className="absolute top-1/4 left-1/10 w-72 h-72 bg-primary/5 rounded-full blur-3xl -z-10" />

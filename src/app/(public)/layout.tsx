@@ -1,6 +1,7 @@
 import React from "react";
 import { cookies } from "next/headers";
 import { Navbar } from "@/components/shared/Navbar";
+import { Footer } from "@/components/shared/Footer";
 
 export default async function PublicLayout({
   children,
@@ -15,6 +16,7 @@ export default async function PublicLayout({
     <>
       <Navbar isAuthenticated={isAuthenticated} />
       <main className="flex-1 flex flex-col">{children}</main>
+      <Footer />
     </>
   );
 }
