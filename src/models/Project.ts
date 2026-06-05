@@ -12,6 +12,7 @@ const ProjectSchema = new Schema<IProject>(
     githubServer: { type: String },
     coverImage: { type: String, required: true },
     galleryImages: { type: [String], default: [] },
+    category: { type: String, required: true, default: "Full Stack" },
     featured: { type: Boolean, default: false },
   },
   { timestamps: true },

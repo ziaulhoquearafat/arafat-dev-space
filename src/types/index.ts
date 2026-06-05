@@ -20,6 +20,7 @@ export interface IProject extends Document {
   githubServer?: string;
   coverImage: string; // Cloudinary URL
   galleryImages?: string[]; // Array of Cloudinary URLs
+  category: string;
   featured: boolean;
   createdAt: Date;
   updatedAt: Date;

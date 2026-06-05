@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,26 +20,26 @@ const projectFormSchema = z.object({
   liveLink: z.string().url("Must be a valid URL").or(z.literal("")),
   githubClient: z.string().url("Must be a valid URL").or(z.literal("")),
   githubServer: z.string().url("Must be a valid URL").or(z.literal("")),
-  coverImage: z
-    .any()
-    .refine(
-      (files) => files && files.length > 0,
-      "Cover image is required."
-    ),
+  coverImage: z.any().optional(),
   category: z.string().min(1, "Category is required."),
   featured: z.boolean(),
 });
 
 type ProjectFormValues = z.infer<typeof projectFormSchema>;
 
-export default function CreateProjectPage() {
+export default function EditProjectPage() {
   const router = useRouter();
+  const { id } = useParams() as { id: string };
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  const [loadingProject, setLoadingProject] = useState(true);
+  const [currentCoverImage, setCurrentCoverImage] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<ProjectFormValues>({
     resolver: zodResolver(projectFormSchema),
@@ -56,22 +56,60 @@ export default function CreateProjectPage() {
     },
   });
 
+  // Fetch initial project data
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        const res = await fetch(`/api/projects/${id}`);
+        if (res.ok) {
+          const project = await res.json();
+          reset({
+            title: project.title,
+            shortDescription: project.shortDescription,
+            detailedDescription: project.detailedDescription,
+            technologies: project.technologies ? project.technologies.join(", ") : "",
+            liveLink: project.liveLink || "",
+            githubClient: project.githubClient || "",
+            githubServer: project.githubServer || "",
+            category: project.category || "Full Stack",
+            featured: !!project.featured,
+          });
+          if (project.coverImage) {
+            setCurrentCoverImage(project.coverImage);
+          }
+        } else {
+          toast.error("Failed to load project details.");
+          router.push("/dashboard/projects");
+        }
+      } catch (error) {
+        console.error("Error loading project:", error);
+        toast.error("An error occurred while loading project details.");
+      } finally {
+        setLoadingProject(false);
+      }
+    };
+
+    fetchProject();
+  }, [id, reset, router]);
+
   // Entrance GSAP animation
   useGSAP(
     () => {
-      gsap.fromTo(
-        ".animate-form-item",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-        }
-      );
+      if (!loadingProject) {
+        gsap.fromTo(
+          ".animate-form-item",
+          { y: 30, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power3.out",
+          }
+        );
+      }
     },
-    { scope: containerRef }
+    { scope: containerRef, dependencies: [loadingProject] }
   );
 
   const onSubmit = async (data: ProjectFormValues) => {
@@ -87,28 +125,40 @@ export default function CreateProjectPage() {
       formData.append("category", data.category);
       formData.append("featured", String(data.featured));
 
+      // Append new image only if selected
       if (data.coverImage && data.coverImage.length > 0) {
         formData.append("coverImage", data.coverImage[0]);
       }
 
-      const res = await fetch("/api/projects", {
-        method: "POST",
+      const res = await fetch(`/api/projects/${id}`, {
+        method: "PUT",
         body: formData,
       });
 
       const result = await res.json();
 
       if (res.ok) {
-        toast.success("Project added successfully!");
+        toast.success("Project updated successfully!");
         router.push("/dashboard/projects");
       } else {
-        toast.error(result.error || "Failed to add project.");
+        toast.error(result.error || "Failed to update project.");
       }
     } catch (error) {
-      console.error("Error creating project:", error);
-      toast.error("An unexpected error occurred while adding the project.");
+      console.error("Error updating project:", error);
+      toast.error("An unexpected error occurred while updating the project.");
     }
   };
+
+  if (loadingProject) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-3">
+        <Loader2 className="size-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground font-medium animate-pulse">
+          Loading project data...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="space-y-6 max-w-4xl">
@@ -126,10 +176,10 @@ export default function CreateProjectPage() {
       {/* Page Header */}
       <div className="animate-form-item space-y-1">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Create New Project
+          Edit Project
         </h1>
         <p className="text-sm text-muted-foreground">
-          Publish a new project case study on your portfolio.
+          Modify the case study details and technology stacks.
         </p>
       </div>
 
@@ -331,6 +381,19 @@ export default function CreateProjectPage() {
                   {(errors.coverImage.message as string) || "Invalid file."}
                 </p>
               )}
+              {currentCoverImage && (
+                <div className="mt-1 text-xs text-muted-foreground flex items-center gap-2">
+                  <span className="font-semibold text-muted-foreground/70">Current Cover:</span>
+                  <a
+                    href={currentCoverImage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline truncate max-w-xs block font-mono"
+                  >
+                    {currentCoverImage.substring(currentCoverImage.lastIndexOf("/") + 1)}
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Featured Setting */}
@@ -390,10 +453,10 @@ export default function CreateProjectPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Adding...
+                  Updating...
                 </>
               ) : (
-                "Add Project"
+                "Update Project"
               )}
             </button>
           </div>
