@@ -23,7 +23,7 @@ const projectFormSchema = z.object({
   coverImage: z.any().optional(),
   category: z.string().min(1, "Category is required."),
   featured: z.boolean(),
-  status: z.enum(["Completed", "Ongoing"]),
+  status: z.enum(["completed", "ongoing"]),
 });
 
 type ProjectFormValues = z.infer<typeof projectFormSchema>;
@@ -54,7 +54,7 @@ export default function EditProjectPage() {
       githubServer: "",
       category: "Full Stack",
       featured: false,
-      status: "Completed",
+      status: "completed",
     },
   });
 
@@ -75,7 +75,7 @@ export default function EditProjectPage() {
             githubServer: project.githubServer || "",
             category: project.category || "Full Stack",
             featured: !!project.featured,
-            status: project.status || "Completed",
+            status: project.status || "completed",
           });
           if (project.coverImage) {
             setCurrentCoverImage(project.coverImage);
@@ -274,15 +274,22 @@ export default function EditProjectPage() {
               >
                 Project Status
               </label>
-              <select
-                id="status"
-                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition duration-200 focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
-                disabled={isSubmitting}
-                {...register("status")}
-              >
-                <option value="Completed">Completed</option>
-                <option value="Ongoing">Ongoing</option>
-              </select>
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <select
+                    id="status"
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition duration-200 focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
+                    disabled={isSubmitting}
+                    value={field.value}
+                    onChange={field.onChange}
+                  >
+                    <option value="completed">Completed</option>
+                    <option value="ongoing">Ongoing</option>
+                  </select>
+                )}
+              />
               {errors.status && (
                 <p className="text-xs font-medium text-destructive">
                   {errors.status.message}

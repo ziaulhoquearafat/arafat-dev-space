@@ -43,18 +43,47 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const formData = await request.formData();
-    const title = formData.get("title") as string | null;
-    const shortDescription = formData.get("shortDescription") as string | null;
-    const detailedDescription = formData.get("detailedDescription") as string | null;
-    const technologies = formData.get("technologies") as string | null;
-    const liveLink = formData.get("liveLink") as string | null;
-    const githubClient = formData.get("githubClient") as string | null;
-    const githubServer = formData.get("githubServer") as string | null;
-    const coverImage = formData.get("coverImage") as File | null;
-    const category = formData.get("category") as string | null;
-    const featuredRaw = formData.get("featured") as string | null;
-    const status = formData.get("status") as string | null;
+    const contentType = request.headers.get("content-type") || "";
+    let title: string | null = null;
+    let shortDescription: string | null = null;
+    let detailedDescription: string | null = null;
+    let technologies: string | null = null;
+    let liveLink: string | null = null;
+    let githubClient: string | null = null;
+    let githubServer: string | null = null;
+    let coverImage: File | string | null = null;
+    let category: string | null = null;
+    let featured: boolean | null = null;
+    let status: string | null = null;
+
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      title = body.title !== undefined ? body.title : null;
+      shortDescription = body.shortDescription !== undefined ? body.shortDescription : null;
+      detailedDescription = body.detailedDescription !== undefined ? body.detailedDescription : null;
+      technologies = body.technologies !== undefined ? (Array.isArray(body.technologies) ? body.technologies.join(", ") : body.technologies) : null;
+      liveLink = body.liveLink !== undefined ? body.liveLink : null;
+      githubClient = body.githubClient !== undefined ? body.githubClient : null;
+      githubServer = body.githubServer !== undefined ? body.githubServer : null;
+      coverImage = body.coverImage !== undefined ? body.coverImage : null;
+      category = body.category !== undefined ? body.category : null;
+      featured = body.featured !== undefined ? !!body.featured : null;
+      status = body.status !== undefined ? body.status : null;
+    } else {
+      const formData = await request.formData();
+      title = formData.get("title") as string | null;
+      shortDescription = formData.get("shortDescription") as string | null;
+      detailedDescription = formData.get("detailedDescription") as string | null;
+      technologies = formData.get("technologies") as string | null;
+      liveLink = formData.get("liveLink") as string | null;
+      githubClient = formData.get("githubClient") as string | null;
+      githubServer = formData.get("githubServer") as string | null;
+      coverImage = formData.get("coverImage") as File | null;
+      category = formData.get("category") as string | null;
+      const featuredRaw = formData.get("featured") as string | null;
+      if (featuredRaw !== null) featured = featuredRaw === "true";
+      status = formData.get("status") as string | null;
+    }
 
     await dbConnect();
 
@@ -88,7 +117,7 @@ export async function PUT(
     if (githubClient !== null) updateData.githubClient = githubClient;
     if (githubServer !== null) updateData.githubServer = githubServer;
     if (category !== null) updateData.category = category;
-    if (featuredRaw !== null) updateData.featured = featuredRaw === "true";
+    if (featured !== null) updateData.featured = featured;
     if (status !== null) updateData.status = status;
 
     if (technologies !== null) {
@@ -96,7 +125,7 @@ export async function PUT(
     }
 
     // Upload cover image to Cloudinary if a new one is selected
-    if (coverImage && coverImage.size > 0) {
+    if (coverImage instanceof File && coverImage.size > 0) {
       const bytes = await coverImage.arrayBuffer();
       const buffer = Buffer.from(bytes);
 
@@ -115,6 +144,8 @@ export async function PUT(
         ).end(buffer);
       });
       updateData.coverImage = uploadResult.secure_url;
+    } else if (typeof coverImage === "string" && coverImage.trim() !== "") {
+      updateData.coverImage = coverImage;
     }
 
     const updatedProject = await Project.findByIdAndUpdate(id, updateData, {

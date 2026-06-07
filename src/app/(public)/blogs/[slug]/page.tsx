@@ -84,7 +84,7 @@ export default async function PublicBlogDetailPage({ params }: Props) {
 
         {/* Article Rich Text Content */}
         <div 
-          className="prose prose-stone dark:prose-invert max-w-none text-foreground/90 leading-relaxed space-y-6"
+          className="prose prose-lg dark:prose-invert max-w-none text-foreground/90 leading-relaxed space-y-6"
           dangerouslySetInnerHTML={{ __html: blog.content }}
         />
       </div>

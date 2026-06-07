@@ -22,7 +22,7 @@ export interface IProject extends Document {
   galleryImages?: string[]; // Array of Cloudinary URLs
   category: string;
   featured: boolean;
-  status?: "Completed" | "Ongoing";
+  status?: "completed" | "ongoing";
   createdAt: Date;
   updatedAt: Date;
 }

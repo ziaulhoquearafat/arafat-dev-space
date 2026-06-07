@@ -14,7 +14,7 @@ const ProjectSchema = new Schema<IProject>(
     galleryImages: { type: [String], default: [] },
     category: { type: String, required: true, default: "Full Stack" },
     featured: { type: Boolean, default: false },
-    status: { type: String, enum: ["Completed", "Ongoing"], default: "Completed" },
+    status: { type: String, enum: ["completed", "ongoing"], default: "completed" },
   },
   { timestamps: true },
 );
