@@ -54,6 +54,7 @@ export async function PUT(
     const coverImage = formData.get("coverImage") as File | null;
     const category = formData.get("category") as string | null;
     const featuredRaw = formData.get("featured") as string | null;
+    const status = formData.get("status") as string | null;
 
     await dbConnect();
 
@@ -77,6 +78,7 @@ export async function PUT(
       coverImage: string;
       category: string;
       featured: boolean;
+      status: string;
     }> = {};
 
     if (title !== null) updateData.title = title;
@@ -87,6 +89,7 @@ export async function PUT(
     if (githubServer !== null) updateData.githubServer = githubServer;
     if (category !== null) updateData.category = category;
     if (featuredRaw !== null) updateData.featured = featuredRaw === "true";
+    if (status !== null) updateData.status = status;
 
     if (technologies !== null) {
       updateData.technologies = technologies.split(",").map((t) => t.trim()).filter(Boolean);

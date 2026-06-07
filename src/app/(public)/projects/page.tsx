@@ -20,6 +20,7 @@ interface ProjectType {
   coverImage: string;
   category: string;
   featured: boolean;
+  status?: "Completed" | "Ongoing";
 }
 
 const CATEGORIES = ["All", "Frontend", "Full Stack", "SaaS", "AI Integrations"];
@@ -159,6 +160,20 @@ export default function PublicProjectsPage() {
                 <div>
                   {/* Cover Image */}
                   <div className="aspect-video relative overflow-hidden bg-muted">
+                    {/* Status Badge */}
+                    <div className="absolute top-4 left-4 z-20">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-lg border ${
+                        project.status === "Ongoing"
+                          ? "border-amber-500/30 text-amber-500"
+                          : "border-emerald-500/30 text-emerald-500"
+                      } bg-background/80 backdrop-blur-md`}>
+                        <span className={`w-2 h-2 rounded-full ${
+                          project.status === "Ongoing" ? "bg-amber-500 animate-pulse" : "bg-emerald-500"
+                        }`}></span>
+                        {project.status || "Completed"}
+                      </span>
+                    </div>
+
                     {project.coverImage ? (
                       <Image
                         src={project.coverImage}

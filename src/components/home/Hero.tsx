@@ -97,7 +97,7 @@ export function Hero() {
           <div className="animate-hero-item flex flex-wrap items-center justify-center md:justify-start gap-4 pt-4">
             <a
               href="/resume.pdf"
-              download
+              download="Md_Ziaul_Hoque_Arafat_Resume.pdf"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-primary to-accent px-6 text-sm font-semibold text-white shadow-md hover:opacity-90 hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-300"
             >
               <Download className="size-4" />

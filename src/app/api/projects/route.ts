@@ -39,6 +39,7 @@ export async function POST(request: Request) {
     const coverImage = formData.get("coverImage") as File | null;
     const category = formData.get("category") as string | null || "Full Stack";
     const featured = formData.get("featured") === "true";
+    const status = formData.get("status") as string | null || "Completed";
 
     // Validate required fields
     if (!title || !shortDescription || !detailedDescription || !technologies || !coverImage) {
@@ -83,6 +84,7 @@ export async function POST(request: Request) {
       galleryImages: [],
       category,
       featured,
+      status,
     });
 
     return NextResponse.json(newProject, { status: 201 });

@@ -23,6 +23,7 @@ const projectFormSchema = z.object({
   coverImage: z.any().optional(),
   category: z.string().min(1, "Category is required."),
   featured: z.boolean(),
+  status: z.enum(["Completed", "Ongoing"]),
 });
 
 type ProjectFormValues = z.infer<typeof projectFormSchema>;
@@ -53,6 +54,7 @@ export default function EditProjectPage() {
       githubServer: "",
       category: "Full Stack",
       featured: false,
+      status: "Completed",
     },
   });
 
@@ -73,6 +75,7 @@ export default function EditProjectPage() {
             githubServer: project.githubServer || "",
             category: project.category || "Full Stack",
             featured: !!project.featured,
+            status: project.status || "Completed",
           });
           if (project.coverImage) {
             setCurrentCoverImage(project.coverImage);
@@ -124,6 +127,7 @@ export default function EditProjectPage() {
       formData.append("githubServer", data.githubServer || "");
       formData.append("category", data.category);
       formData.append("featured", String(data.featured));
+      formData.append("status", data.status);
 
       // Append new image only if selected
       if (data.coverImage && data.coverImage.length > 0) {
@@ -187,8 +191,8 @@ export default function EditProjectPage() {
       <div className="animate-form-item rounded-xl border border-border/50 bg-card p-6 sm:p-8 shadow-sm">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           
-          {/* Title, Technologies & Category Grid */}
-          <div className="grid gap-6 md:grid-cols-3">
+          {/* Title, Technologies, Category & Status Grid */}
+          <div className="grid gap-6 md:grid-cols-4">
             {/* Title Field */}
             <div className="space-y-1.5">
               <label
@@ -258,6 +262,30 @@ export default function EditProjectPage() {
               {errors.category && (
                 <p className="text-xs font-medium text-destructive">
                   {errors.category.message}
+                </p>
+              )}
+            </div>
+
+            {/* Project Status Dropdown */}
+            <div className="space-y-1.5">
+              <label
+                htmlFor="status"
+                className="text-sm font-semibold text-muted-foreground"
+              >
+                Project Status
+              </label>
+              <select
+                id="status"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition duration-200 focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
+                disabled={isSubmitting}
+                {...register("status")}
+              >
+                <option value="Completed">Completed</option>
+                <option value="Ongoing">Ongoing</option>
+              </select>
+              {errors.status && (
+                <p className="text-xs font-medium text-destructive">
+                  {errors.status.message}
                 </p>
               )}
             </div>
