@@ -105,7 +105,7 @@ export function Hero() {
             </a>
 
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/ziaul-hoque-arafat/"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-border bg-background px-6 text-sm font-semibold text-muted-foreground hover:border-primary hover:text-primary hover:scale-105 active:scale-95 transition-all duration-300"
