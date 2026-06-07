@@ -7,7 +7,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { TiptapEditor } from "@/components/editor/TiptapEditor";
+import { MarkdownEditor } from "@/components/editor/MarkdownEditor";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { toast } from "react-hot-toast";
@@ -387,8 +387,8 @@ export default function CreateProjectPage() {
               name="detailedDescription"
               control={control}
               render={({ field }) => (
-                <TiptapEditor
-                  content={field.value}
+                <MarkdownEditor
+                  value={field.value}
                   onChange={field.onChange}
                 />
               )}
