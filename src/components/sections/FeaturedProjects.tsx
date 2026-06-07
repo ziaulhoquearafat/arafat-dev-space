@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { ExternalLink, ArrowRight, Code } from "lucide-react";
 import { GithubIcon } from "@/components/shared/icons";
+import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import { ArrowRight, Code, ExternalLink } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -45,7 +45,7 @@ export function FeaturedProjects() {
           } else if (data && typeof data === "object") {
             fetchedProjects = data.projects || [];
           }
-          
+
           // Keep only the latest 4 projects
           setProjects(fetchedProjects.slice(0, 4));
         }
@@ -84,7 +84,7 @@ export function FeaturedProjects() {
         });
       });
     },
-    { scope: containerRef, dependencies: [projects, isLoading] }
+    { scope: containerRef, dependencies: [projects, isLoading] },
   );
 
   return (
@@ -132,7 +132,9 @@ export function FeaturedProjects() {
         /* Empty State */
         <div className="h-screen w-full flex items-center justify-center p-4">
           <div className="text-center py-20 px-10 border border-border/40 rounded-3xl bg-card/60 backdrop-blur-md max-w-lg w-full">
-            <p className="text-muted-foreground font-medium text-lg">No projects found.</p>
+            <p className="text-muted-foreground font-medium text-lg">
+              No projects found.
+            </p>
           </div>
         </div>
       ) : (
@@ -146,27 +148,34 @@ export function FeaturedProjects() {
                 style={{ zIndex: index + 1 }}
               >
                 {/* Visual Glassmorphic Border Card */}
-                <div className={`project-inner-card relative w-full max-w-6xl h-[80vh] bg-card border border-border/50 rounded-3xl shadow-2xl flex flex-col overflow-hidden ${
-                  index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-                }`}>
-                  
-                   {/* Left Side: Cover Image */}
-                   <div className="relative w-full md:w-1/2 h-44 sm:h-60 md:h-full flex-shrink-0 bg-muted">
-                     {/* Status Badge */}
-                     <div className="absolute top-4 left-4 z-20">
-                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-lg border ${
-                         project.status === "Ongoing"
-                           ? "border-amber-500/30 text-amber-500"
-                           : "border-emerald-500/30 text-emerald-500"
-                       } bg-background/80 backdrop-blur-md`}>
-                         <span className={`w-2 h-2 rounded-full ${
-                           project.status === "Ongoing" ? "bg-amber-500 animate-pulse" : "bg-emerald-500"
-                         }`}></span>
-                         {project.status || "Completed"}
-                       </span>
-                     </div>
+                <div
+                  className={`project-inner-card relative w-full max-w-6xl h-[80vh] bg-card border border-border/50 rounded-3xl shadow-2xl flex flex-col overflow-hidden ${
+                    index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                  }`}
+                >
+                  {/* Left Side: Cover Image */}
+                  <div className="relative w-full md:w-1/2 h-44 sm:h-60 md:h-full flex-shrink-0 bg-muted">
+                    {/* Status Badge */}
+                    <div className="absolute top-4 left-4 z-20">
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-lg border ${
+                          project.status === "Ongoing"
+                            ? "border-amber-500/30 text-amber-500"
+                            : "border-emerald-500/30 text-emerald-500"
+                        } bg-background/80 backdrop-blur-md`}
+                      >
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            project.status === "Ongoing"
+                              ? "bg-amber-500 animate-pulse"
+                              : "bg-emerald-500"
+                          }`}
+                        ></span>
+                        {project.status || "Completed"}
+                      </span>
+                    </div>
 
-                     {project.coverImage ? (
+                    {project.coverImage ? (
                       <Image
                         src={project.coverImage}
                         alt={project.title}
@@ -257,7 +266,6 @@ export function FeaturedProjects() {
                         <ArrowRight className="size-3.5" />
                       </Link>
                     </div>
-
                   </div>
                 </div>
               </div>
