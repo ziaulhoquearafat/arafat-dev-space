@@ -104,20 +104,38 @@ export default async function PublicProjectDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* Project Layout Split */}
-        <div className="grid gap-8 md:grid-cols-3">
-          {/* Main Details (2 cols) */}
-          <div className="md:col-span-2 space-y-8">
-            {/* Cover Image */}
-            <div className="aspect-video w-full overflow-hidden rounded-2xl border border-border/40 shadow-sm">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={project.coverImage}
-                alt={project.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {/* Full-Width Cover Image Container */}
+        <div className="w-full overflow-hidden rounded-2xl border border-border/40 bg-muted/10 shadow-sm flex items-center justify-center p-4 sm:p-6">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={project.coverImage}
+            alt={project.title}
+            className="max-h-[60vh] md:max-h-[70vh] w-auto max-w-full object-contain rounded-xl shadow-lg border border-border/20"
+          />
+        </div>
 
+        {/* Technologies Box (Full-Width Sibling below Image) */}
+        <div className="rounded-xl border border-border/50 bg-card p-6 shadow-sm space-y-4 w-full">
+          <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-border/40">
+            <Code className="size-4 text-primary" />
+            Technologies
+          </h3>
+          <div className="flex flex-wrap gap-2.5">
+            {project.technologies.map((tech: string) => (
+              <span
+                key={tech}
+                className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-muted text-muted-foreground border border-border hover:bg-muted/70 transition-colors"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Project Details Description & Gallery Split */}
+        <div className="grid gap-8 md:grid-cols-3">
+          {/* Main Details (2 cols or 3 cols if no gallery) */}
+          <div className={project.galleryImages && project.galleryImages.length > 0 ? "md:col-span-2 space-y-8" : "md:col-span-3 space-y-8"}>
             {/* Detailed Description */}
             <div className="space-y-4">
               <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
@@ -176,28 +194,9 @@ export default async function PublicProjectDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Sidebar Tech Specs (1 col) */}
-          <div className="space-y-6">
-            {/* Tech Stack */}
-            <div className="rounded-xl border border-border/50 bg-card p-6 shadow-sm space-y-4">
-              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-border/40">
-                <Code className="size-4 text-primary" />
-                Technologies
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech: string) => (
-                  <span
-                    key={tech}
-                    className="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-muted text-muted-foreground border border-border"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Gallery Images (if any) */}
-            {project.galleryImages && project.galleryImages.length > 0 && (
+          {/* Sidebar Gallery Images (1 col) */}
+          {project.galleryImages && project.galleryImages.length > 0 && (
+            <div className="space-y-6">
               <div className="rounded-xl border border-border/50 bg-card p-6 shadow-sm space-y-4">
                 <h3 className="text-sm font-bold text-foreground uppercase tracking-wider pb-3 border-b border-border/40">
                   Project Gallery
@@ -215,8 +214,8 @@ export default async function PublicProjectDetailPage({ params }: Props) {
                   ))}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
