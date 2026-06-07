@@ -46,8 +46,9 @@ export function FeaturedProjects() {
             fetchedProjects = data.projects || [];
           }
 
-          // Keep only the latest 4 projects
-          setProjects(fetchedProjects.slice(0, 4));
+          // Keep only featured projects and limit to the latest 4
+          const featuredOnly = fetchedProjects.filter((project) => project.featured);
+          setProjects(featuredOnly.slice(0, 4));
         }
       } catch (error) {
         console.error("Failed to fetch projects in FeaturedProjects:", error);
@@ -133,7 +134,7 @@ export function FeaturedProjects() {
         <div className="h-screen w-full flex items-center justify-center p-4">
           <div className="text-center py-20 px-10 border border-border/40 rounded-3xl bg-card/60 backdrop-blur-md max-w-lg w-full">
             <p className="text-muted-foreground font-medium text-lg">
-              No projects found.
+              No featured projects available yet.
             </p>
           </div>
         </div>
