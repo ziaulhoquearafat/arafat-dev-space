@@ -47,7 +47,9 @@ export function FeaturedProjects() {
           }
 
           // Keep only featured projects and limit to the latest 4
-          const featuredOnly = fetchedProjects.filter((project) => project.featured);
+          const featuredOnly = fetchedProjects.filter(
+            (project) => project.featured,
+          );
           setProjects(featuredOnly.slice(0, 4));
         }
       } catch (error) {
@@ -94,11 +96,16 @@ export function FeaturedProjects() {
       id="featured-projects"
       className="relative w-full"
     >
-      {/* Absolute Section Header */}
-      <div className="absolute top-6 left-0 right-0 z-50 text-center pointer-events-none px-4">
+      {/* Section Header */}
+      <div className="w-full text-center px-4 pt-24 pb-4">
         <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-accent-foreground bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(235,94,40,0.3)] mb-4">
           Featured Projects
         </h2>
+        <p className="text-muted-foreground mt-3 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+          A curated selection of my recent full-stack applications, showcasing
+          modern architectures, creative problem-solving, and AI-assisted
+          workflows.
+        </p>
       </div>
 
       {/* Decorative Glow Blobs */}
