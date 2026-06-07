@@ -110,7 +110,7 @@ export function Education() {
 
       {/* Premium Section Title */}
       <div className="text-center mb-16 sm:mb-20">
-        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-3">
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-accent-foreground bg-clip-text text-transparent mb-3 drop-shadow-[0_0_15px_rgba(235,94,40,0.3)]">
           Education & Journey
         </h2>
         <p className="text-muted-foreground max-w-md mx-auto text-sm sm:text-base">

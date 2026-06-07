@@ -95,7 +95,7 @@ export function FeaturedProjects() {
     >
       {/* Absolute Section Header */}
       <div className="absolute top-6 left-0 right-0 z-50 text-center pointer-events-none px-4">
-        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-accent-foreground bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(235,94,40,0.3)] mb-4">
           Featured Projects
         </h2>
       </div>

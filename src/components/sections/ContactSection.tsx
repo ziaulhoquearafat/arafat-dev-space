@@ -104,7 +104,7 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Section Header */}
         <div className="space-y-4 text-center">
-          <h2 className="animate-contact-item text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h2 className="animate-contact-item text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-accent-foreground bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(235,94,40,0.3)]">
             Get In Touch
           </h2>
           <p className="animate-contact-item max-w-2xl mx-auto text-base sm:text-lg text-muted-foreground">
