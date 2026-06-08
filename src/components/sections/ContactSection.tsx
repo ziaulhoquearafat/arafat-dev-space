@@ -1,22 +1,25 @@
 "use client";
 
-import React, { useRef } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import toast from "react-hot-toast";
-import { Phone, Mail, MapPin, Calendar, Send, Loader2 } from "lucide-react";
-import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import gsap from "gsap";
+import { Calendar, Loader2, Mail, MapPin, Phone, Send } from "lucide-react";
+import { useRef } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import * as z from "zod";
 
 // Form validation schema using Zod
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   email: z.string().email("Please enter a valid email address."),
-  phone: z.string().optional().refine((val) => {
-    if (!val) return true;
-    return /^[+]?[0-9\s-]{6,15}$/.test(val);
-  }, "Invalid phone number format."),
+  phone: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val) return true;
+      return /^[+]?[0-9\s-]{6,15}$/.test(val);
+    }, "Invalid phone number format."),
   subject: z.string().min(3, "Subject must be at least 3 characters."),
   message: z.string().min(10, "Message must be at least 10 characters."),
 });
@@ -59,10 +62,10 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
           duration: 0.8,
           stagger: 0.1,
           ease: "power3.out",
-        }
+        },
       );
     },
-    { scope: containerRef }
+    { scope: containerRef },
   );
 
   const onSubmit = async (data: ContactFormValues) => {
@@ -108,24 +111,26 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
             Get In Touch
           </h2>
           <p className="animate-contact-item max-w-2xl mx-auto text-base sm:text-lg text-muted-foreground">
-            Have a project in mind or want to discuss a potential collaboration? Feel free to drop a message.
+            Have a project in mind or want to discuss a potential collaboration?
+            Feel free to drop a message.
           </p>
         </div>
 
         {/* Contact Container Grid */}
         <div className="grid gap-8 lg:grid-cols-12 items-stretch">
-          
           {/* Left Column: Contact Details */}
           <div className="lg:col-span-5 flex flex-col justify-between space-y-8 p-6 sm:p-8 rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm animate-contact-item">
             <div className="space-y-6">
-              <h3 className="text-xl font-bold text-foreground">Contact Information</h3>
+              <h3 className="text-xl font-bold text-foreground">
+                Contact Information
+              </h3>
               <p className="text-sm text-muted-foreground">
-                Reach out directly via phone or email, or drop by for a chat if you&apos;re in the city.
+                Reach out directly via phone or email, or drop by for a chat if
+                you&apos;re in the city.
               </p>
 
               {/* Info Stack */}
               <div className="space-y-4">
-                
                 {/* Phone */}
                 <a
                   href="tel:+8801766952640"
@@ -135,8 +140,12 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
                     <Phone className="size-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground">Phone</p>
-                    <p className="text-sm font-bold text-foreground">+880 1766 952640</p>
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      Phone
+                    </p>
+                    <p className="text-sm font-bold text-foreground">
+                      +880 1766 952640
+                    </p>
                   </div>
                 </a>
 
@@ -149,7 +158,9 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
                     <Mail className="size-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground">Email</p>
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      Email
+                    </p>
                     <p className="text-sm font-bold text-foreground truncate max-w-full">
                       mdarafat3167@gmail.com
                     </p>
@@ -162,11 +173,14 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
                     <MapPin className="size-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground">Location</p>
-                    <p className="text-sm font-bold text-foreground">Chattogram, Bangladesh</p>
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      Location
+                    </p>
+                    <p className="text-sm font-bold text-foreground">
+                      Chattogram, Bangladesh
+                    </p>
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -189,14 +203,19 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
             onSubmit={handleSubmit(onSubmit)}
             className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-8 rounded-2xl border border-border/40 bg-card/60 backdrop-blur-md shadow-sm space-y-5 animate-contact-item"
           >
-            <h3 className="text-xl font-bold text-foreground">Send a Message</h3>
+            <h3 className="text-xl font-bold text-foreground">
+              Send a Message
+            </h3>
 
             {/* Inputs Stagger Container */}
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 {/* Name */}
                 <div className="space-y-1">
-                  <label htmlFor="name" className="text-xs font-semibold text-muted-foreground">
+                  <label
+                    htmlFor="name"
+                    className="text-xs font-semibold text-muted-foreground"
+                  >
                     Your Name
                   </label>
                   <input
@@ -216,7 +235,10 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
 
                 {/* Email */}
                 <div className="space-y-1">
-                  <label htmlFor="email" className="text-xs font-semibold text-muted-foreground">
+                  <label
+                    htmlFor="email"
+                    className="text-xs font-semibold text-muted-foreground"
+                  >
                     Email Address
                   </label>
                   <input
@@ -238,7 +260,10 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
               <div className="grid gap-4 sm:grid-cols-2">
                 {/* Phone */}
                 <div className="space-y-1">
-                  <label htmlFor="phone" className="text-xs font-semibold text-muted-foreground">
+                  <label
+                    htmlFor="phone"
+                    className="text-xs font-semibold text-muted-foreground"
+                  >
                     Phone (Optional)
                   </label>
                   <input
@@ -258,7 +283,10 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
 
                 {/* Subject */}
                 <div className="space-y-1">
-                  <label htmlFor="subject" className="text-xs font-semibold text-muted-foreground">
+                  <label
+                    htmlFor="subject"
+                    className="text-xs font-semibold text-muted-foreground"
+                  >
                     Subject
                   </label>
                   <input
@@ -279,7 +307,10 @@ export function ContactSection({ showBorder = true }: ContactSectionProps) {
 
               {/* Message */}
               <div className="space-y-1">
-                <label htmlFor="message" className="text-xs font-semibold text-muted-foreground">
+                <label
+                  htmlFor="message"
+                  className="text-xs font-semibold text-muted-foreground"
+                >
                   Your Message
                 </label>
                 <textarea

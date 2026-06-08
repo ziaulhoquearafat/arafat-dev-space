@@ -1,12 +1,12 @@
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Oxanium } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
 
-import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ToastProvider } from "@/components/shared/ToastProvider";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 
-const oxanium = Oxanium({subsets:['latin'],variable:'--font-sans'});
+const oxanium = Oxanium({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,7 +23,8 @@ export const metadata: Metadata = {
     default: "Md Ziaul Hoque Arafat | Full-Stack Developer",
     template: "%s | Md Ziaul Hoque Arafat",
   },
-  description: "Portfolio of Md Ziaul Hoque Arafat, a MERN Stack and Frontend Developer specializing in Next.js, React, and high-efficiency AI-assisted coding & prompt engineering.",
+  description:
+    "Portfolio of Md Ziaul Hoque Arafat, a MERN Stack and Frontend Developer specializing in Next.js, React, and high-efficiency AI-assisted coding & prompt engineering.",
   keywords: [
     "Md Ziaul Hoque Arafat",
     "Full-Stack Developer",
@@ -39,7 +40,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     title: "Md Ziaul Hoque Arafat | Full-Stack Developer",
-    description: "Portfolio of Md Ziaul Hoque Arafat, a MERN Stack and Frontend Developer specializing in Next.js, React, and high-efficiency AI-assisted coding & prompt engineering.",
+    description:
+      "Portfolio of Md Ziaul Hoque Arafat, a MERN Stack and Frontend Developer specializing in Next.js, React, and high-efficiency AI-assisted coding & prompt engineering.",
     siteName: "Md Ziaul Hoque Arafat Portfolio",
     images: [
       {
@@ -53,7 +55,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Md Ziaul Hoque Arafat | Full-Stack Developer",
-    description: "MERN Stack and Frontend Developer specializing in Next.js, React, and AI-assisted coding.",
+    description:
+      "MERN Stack and Frontend Developer specializing in Next.js, React, and AI-assisted coding.",
     images: ["/og-image.jpg"],
   },
 };
@@ -66,7 +69,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", oxanium.variable)}
+      className={cn(
+        "h-full",
+        "antialiased",
+        geistSans.variable,
+        geistMono.variable,
+        "font-sans",
+        oxanium.variable,
+      )}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
