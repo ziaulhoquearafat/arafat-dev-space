@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
+import toast from "react-hot-toast";
 import "react-quill-new/dist/quill.snow.css";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {
@@ -10,17 +11,6 @@ const ReactQuill = dynamic(() => import("react-quill-new"), {
     <div className="h-64 w-full bg-background border border-border/50 rounded-lg animate-pulse" />
   ),
 });
-
-const modules = {
-  toolbar: [
-    [{ header: 1 }, { header: 2 }],
-    ["bold", "italic", "underline", "strike"],
-    ["blockquote"],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["link", "image"],
-    ["clean"],
-  ],
-};
 
 const formats = [
   "header",
@@ -42,6 +32,73 @@ interface QuillEditorProps {
 }
 
 export function QuillEditor({ value, onChange, placeholder }: QuillEditorProps) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const quillRef = useRef<any>(null);
+
+  // Custom image handler to upload images to Cloudinary via /api/upload
+  const imageHandler = useCallback(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const toastId = toast.loading("Uploading image to cloud storage...");
+
+      try {
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Upload failed");
+
+        const data = await res.json();
+        const url = data.url;
+
+        // Get Quill Editor instance
+        const editor = quillRef.current?.getEditor();
+        if (editor) {
+          const range = editor.getSelection();
+          if (range) {
+            editor.insertEmbed(range.index, "image", url);
+            editor.setSelection(range.index + 1);
+          } else {
+            const length = editor.getLength();
+            editor.insertEmbed(length, "image", url);
+          }
+          toast.success("Image uploaded successfully!", { id: toastId });
+        }
+      } catch (error) {
+        console.error("Image upload error:", error);
+        toast.error("Failed to upload image to cloud storage.", { id: toastId });
+      }
+    };
+  }, []);
+
+  // Dynamically configure modules to bind the custom image handler
+  const modules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ header: 1 }, { header: 2 }],
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["link", "image"],
+        ["clean"],
+      ],
+      handlers: {
+        image: imageHandler,
+      },
+    },
+  }), [imageHandler]);
+
   const styles = `
     .quill-editor-wrapper .ql-toolbar.ql-snow {
       border: none;
@@ -122,17 +179,21 @@ export function QuillEditor({ value, onChange, placeholder }: QuillEditorProps) 
     }
   `;
 
-  return (
-    <div className="quill-editor-wrapper w-full border border-border/50 rounded-lg overflow-hidden flex flex-col">
-      <style dangerouslySetInnerHTML={{ __html: styles }} />
-      <ReactQuill
-        theme="snow"
-        value={value}
-        onChange={onChange}
-        modules={modules}
-        formats={formats}
-        placeholder={placeholder || "Write something amazing..."}
-      />
-    </div>
-  );
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const ReactQuillComponent = ReactQuill as any;
+
+      return (
+        <div className="quill-editor-wrapper w-full border border-border/50 rounded-lg overflow-hidden flex flex-col">
+          <style dangerouslySetInnerHTML={{ __html: styles }} />
+          <ReactQuillComponent
+            ref={quillRef}
+            theme="snow"
+            value={value}
+            onChange={onChange}
+            modules={modules}
+            formats={formats}
+            placeholder={placeholder || "Write something amazing..."}
+          />
+        </div>
+      );
 }
