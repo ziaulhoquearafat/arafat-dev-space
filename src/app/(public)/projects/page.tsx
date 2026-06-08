@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { ExternalLink, ArrowRight, Code } from "lucide-react";
 import { GithubIcon } from "@/components/shared/icons";
-import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ArrowRight, Code, ExternalLink } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 interface ProjectType {
   _id: string;
@@ -23,11 +23,11 @@ interface ProjectType {
   status?: "completed" | "ongoing";
 }
 
-const CATEGORIES = ["All", "Frontend", "Full Stack", "SaaS", "AI Integrations"];
+const CATEGORIES = ["All", "Frontend", "Full Stack"];
 
 export default function PublicProjectsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const [projects, setProjects] = useState<ProjectType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("All");
@@ -61,9 +61,10 @@ export default function PublicProjectsPage() {
   }, []);
 
   // Bulletproof filtering logic with category fallback for legacy entries
-  const filteredProjects = activeCategory === "All"
-    ? projects
-    : projects.filter((p) => (p.category || "Full Stack") === activeCategory);
+  const filteredProjects =
+    activeCategory === "All"
+      ? projects
+      : projects.filter((p) => (p.category || "Full Stack") === activeCategory);
 
   // Entrance & Filter change animation using GSAP
   useGSAP(
@@ -80,15 +81,18 @@ export default function PublicProjectsPage() {
             stagger: 0.08,
             ease: "power2.out",
             clearProps: "transform",
-          }
+          },
         );
       }
     },
-    { scope: containerRef, dependencies: [activeCategory, isLoading] }
+    { scope: containerRef, dependencies: [activeCategory, isLoading] },
   );
 
   return (
-    <div ref={containerRef} className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 bg-background">
+    <div
+      ref={containerRef}
+      className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 bg-background"
+    >
       <div className="max-w-5xl mx-auto space-y-12">
         {/* Header */}
         <div className="space-y-4 text-center">
@@ -96,7 +100,8 @@ export default function PublicProjectsPage() {
             My Projects
           </h1>
           <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
-            A showcase of my recent engineering work, applications, and open-source contributions.
+            A showcase of my recent engineering work, applications, and
+            open-source contributions.
           </p>
         </div>
 
@@ -147,7 +152,9 @@ export default function PublicProjectsPage() {
         ) : filteredProjects.length === 0 ? (
           /* Centered Sleek Empty State */
           <div className="text-center py-20 border border-border/50 rounded-2xl bg-card">
-            <p className="text-muted-foreground font-medium text-lg">No projects found.</p>
+            <p className="text-muted-foreground font-medium text-lg">
+              No projects found.
+            </p>
           </div>
         ) : (
           /* Projects Grid */
@@ -162,14 +169,20 @@ export default function PublicProjectsPage() {
                   <div className="aspect-video relative overflow-hidden bg-muted">
                     {/* Status Badge */}
                     <div className="absolute top-4 left-4 z-20">
-                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-lg border ${
-                        project.status === "ongoing"
-                          ? "border-amber-500/30 text-amber-500"
-                          : "border-emerald-500/30 text-emerald-500"
-                      } bg-background/80 backdrop-blur-md`}>
-                        <span className={`w-2 h-2 rounded-full ${
-                          project.status === "ongoing" ? "bg-amber-500 animate-pulse" : "bg-emerald-500"
-                        }`}></span>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold shadow-lg border ${
+                          project.status === "ongoing"
+                            ? "border-amber-500/30 text-amber-500"
+                            : "border-emerald-500/30 text-emerald-500"
+                        } bg-background/80 backdrop-blur-md`}
+                      >
+                        <span
+                          className={`w-2 h-2 rounded-full ${
+                            project.status === "ongoing"
+                              ? "bg-amber-500 animate-pulse"
+                              : "bg-emerald-500"
+                          }`}
+                        ></span>
                         {project.status === "ongoing" ? "Ongoing" : "Completed"}
                       </span>
                     </div>
