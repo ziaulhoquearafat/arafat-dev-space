@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Sun, Moon, Menu, X, LogOut, User } from "lucide-react";
+import { Sun, Moon, Menu, X } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { toast } from "react-hot-toast";
 
 interface NavbarProps {
   isAuthenticated: boolean;
@@ -66,23 +64,6 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  const handleLogout = async () => {
-    try {
-      const res = await fetch("/api/auth/logout", { method: "POST" });
-      if (res.ok) {
-        toast.success("Logged out successfully.");
-        setTimeout(() => {
-          window.location.reload();
-        }, 800);
-      } else {
-        toast.error("Failed to log out. Please try again.");
-      }
-    } catch (error) {
-      console.error("Failed to log out:", error);
-      toast.error("Failed to log out. Please try again.");
-    }
-  };
-
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "Projects", href: "/projects" },
@@ -90,8 +71,6 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
     ...(isAuthenticated && userProfile?.role === "admin" ? [{ label: "Dashboard", href: "/dashboard" }] : []),
     { label: "Contact", href: "/contact" },
   ];
-
-  const profileHref = userProfile?.role === "admin" ? "/dashboard/profile" : "/user";
 
   return (
     <div
@@ -139,56 +118,12 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
             )}
           </button>
 
-          {/* Conditional Auth UI */}
-          {isAuthenticated ? (
-            <div className="flex items-center gap-4">
-              <Link
-                href={profileHref}
-                className="flex size-9 items-center justify-center rounded-full bg-linear-to-br from-primary to-accent p-0.5 shadow-sm hover:scale-105 transition-transform duration-200 cursor-pointer"
-                aria-label="View Profile"
-              >
-                <div className="relative h-full w-full rounded-full bg-card overflow-hidden">
-                  {userProfile?.profileImage ? (
-                    <Image
-                      src={userProfile.profileImage}
-                      alt={userProfile.name || "User Profile"}
-                      fill
-                      sizes="36px"
-                      className="rounded-full object-cover"
-                      priority
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-card-foreground">
-                      <User className="size-4 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-              </Link>
-
-              <button
-                onClick={handleLogout}
-                className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full border border-border bg-card px-4 text-xs font-semibold text-muted-foreground hover:bg-destructive/10 hover:text-destructive cursor-pointer transition-colors shadow-xs"
-              >
-                <LogOut className="size-4" />
-                <span>Logout</span>
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-4">
-              <Link
-                href="/login"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/register"
-                className="inline-flex h-9 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent px-4 text-sm font-semibold text-white shadow-sm hover:opacity-90 hover:shadow-md transition-all active:scale-95"
-              >
-                Sign up
-              </Link>
-            </div>
-          )}
+          <Link
+            href="/#contact"
+            className="inline-flex h-9 items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent-foreground px-5 text-sm font-semibold text-white shadow-sm hover:opacity-90 hover:shadow-md hover:scale-102 active:scale-98 transition-all duration-300 cursor-pointer"
+          >
+            Hire Me
+          </Link>
         </div>
 
         {/* Mobile Toggle & Bare Actions */}
@@ -236,66 +171,13 @@ export function Navbar({ isAuthenticated }: NavbarProps) {
             })}
 
             <div className="border-t border-border/40 my-4 pt-4 px-3">
-              {isAuthenticated ? (
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between">
-                    <Link
-                      href={profileHref}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3"
-                    >
-                      <div className="flex size-9 items-center justify-center rounded-full bg-linear-to-br from-primary to-accent p-0.5">
-                        <div className="relative h-full w-full rounded-full bg-card overflow-hidden">
-                          {userProfile?.profileImage ? (
-                            <Image
-                              src={userProfile.profileImage}
-                              alt={userProfile.name || "Avatar"}
-                              fill
-                              sizes="36px"
-                              className="rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-card-foreground">
-                              <User className="size-4 text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-foreground leading-none">{userProfile?.name || "My Profile"}</span>
-                        <span className="text-xs text-muted-foreground mt-0.5 leading-none">{userProfile?.email}</span>
-                      </div>
-                    </Link>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      handleLogout();
-                    }}
-                    className="flex w-full items-center justify-center gap-2 rounded-full border border-border/60 bg-card py-2 text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-muted cursor-pointer transition-all"
-                  >
-                    <LogOut className="size-4" />
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-3">
-                  <Link
-                    href="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex w-full items-center justify-center rounded-full border border-border/60 bg-card py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all"
-                  >
-                    Log in
-                  </Link>
-                  <Link
-                    href="/register"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex w-full items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent py-2 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition-all"
-                  >
-                    Sign up
-                  </Link>
-                </div>
-              )}
+              <Link
+                href="/#contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex w-full items-center justify-center rounded-full bg-gradient-to-r from-primary to-accent-foreground py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90 transition-all duration-300"
+              >
+                Hire Me
+              </Link>
             </div>
           </div>
         </div>
